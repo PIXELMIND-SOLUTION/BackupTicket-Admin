@@ -23,7 +23,7 @@ const GetNotificationPage = () => {
   const [deletingId, setDeletingId] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
 
-  const API_BASE_URL = "http://31.97.206.144:8127/api/admin";
+  const API_BASE_URL = "http://31.97.228.17:8127/api/admin";
 
   const notificationTypes = {
     info: { 

@@ -22,7 +22,7 @@ const PlatformCharge = () => {
   const [alertType, setAlertType] = useState('success');
 
   // API base URL
-  const API_BASE_URL = 'http://31.97.206.144:8127/api/admin';
+  const API_BASE_URL = 'http://31.97.228.17:8127/api/admin';
 
   // Show alert function
   const showAlertMessage = (message, type = 'success') => {

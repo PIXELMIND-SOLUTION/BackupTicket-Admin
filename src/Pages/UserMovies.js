@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { FaEye, FaEdit, FaTrash, FaSearch, FaTicketAlt, FaCalendar, FaMoneyBill, FaFilm, FaTheaterMasks, FaLanguage, FaUser, FaCheckCircle, FaTimesCircle, FaImage, FaQrcode, FaChair, FaBuilding, FaClock, FaTag, FaIdBadge, FaCompress, FaSave, FaTimes } from "react-icons/fa";
+import { FaEye, FaEdit, FaTrash, FaSearch, FaTicketAlt, FaCalendar, FaMoneyBill, FaFilm, FaTheaterMasks, FaLanguage, FaUser, FaCheckCircle, FaTimesCircle, FaImage, FaQrcode, FaChair, FaBuilding, FaClock, FaTag, FaIdBadge, FaCompress, FaSave, FaTimes, FaTimesCircle as FaClose } from "react-icons/fa";
 import axios from "axios";
 
-const API_BASE_URL = "http://31.97.206.144:8127";
+const API_BASE_URL = "http://31.97.228.17:8127";
 
 const UserMovies = () => {
   const [movies, setMovies] = useState([]);
@@ -17,6 +17,11 @@ const UserMovies = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [imageErrors, setImageErrors] = useState({});
   const moviesPerPage = 8;
+
+  // New state for image preview modal
+  const [isImagePreviewModalOpen, setIsImagePreviewModalOpen] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState("");
+  const [previewImageTitle, setPreviewImageTitle] = useState("");
 
   // Edit form state
   const [editForm, setEditForm] = useState({
@@ -52,7 +57,7 @@ const UserMovies = () => {
     try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/api/admin/allusersmovies`);
-      
+
       if (response.data && response.data.success) {
         setMovies(response.data.data);
       }
@@ -68,7 +73,7 @@ const UserMovies = () => {
     if (window.confirm("Are you sure you want to delete this movie ticket?")) {
       try {
         const response = await axios.delete(`${API_BASE_URL}/api/admin/deletemovieticet/${ticketId}`);
-        
+
         if (response.data.success) {
           alert(response.data.message || "Movie ticket deleted successfully");
           setMovies(movies.filter((movie) => movie._id !== ticketId));
@@ -103,13 +108,23 @@ const UserMovies = () => {
     return `${API_BASE_URL}${path}`;
   };
 
+  // Function to open image preview modal
+  const openImagePreview = (imageUrl, title) => {
+    const fullUrl = getFullImageUrl(imageUrl);
+    if (fullUrl) {
+      setPreviewImageUrl(fullUrl);
+      setPreviewImageTitle(title);
+      setIsImagePreviewModalOpen(true);
+    }
+  };
+
   const enableEditMode = () => {
     setIsEditMode(true);
     setEditingMovie(selectedMovie);
-    
+
     // Reset image errors
     setImageErrors({});
-    
+
     // Populate edit form with current movie data
     setEditForm({
       fullName: selectedMovie.fullName || "",
@@ -145,12 +160,12 @@ const UserMovies = () => {
 
   const handleEditFormChange = (e) => {
     const { name, value, type, checked, files } = e.target;
-    
+
     if (type === "file") {
       if (files && files[0]) {
         const file = files[0];
         const previewUrl = URL.createObjectURL(file);
-        
+
         if (name === "ticketImage") {
           setEditForm(prev => ({
             ...prev,
@@ -188,19 +203,19 @@ const UserMovies = () => {
       const response = await axios.put(`${API_BASE_URL}/api/admin/updatemovieticet/${editingMovie._id}`, {
         status: editForm.status
       });
-      
+
       if (response.data.success) {
         alert(response.data.message || "Movie status updated successfully");
-        
+
         // Update movies list
-        const updatedMovies = movies.map(movie => 
-          movie._id === editingMovie._id ? {...movie, status: editForm.status} : movie
+        const updatedMovies = movies.map(movie =>
+          movie._id === editingMovie._id ? { ...movie, status: editForm.status } : movie
         );
         setMovies(updatedMovies);
-        
+
         // Update selected movie
-        setSelectedMovie({...selectedMovie, status: editForm.status});
-        
+        setSelectedMovie({ ...selectedMovie, status: editForm.status });
+
         // Stay in edit mode but update the form
         setEditForm(prev => ({
           ...prev,
@@ -220,7 +235,7 @@ const UserMovies = () => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      
+
       // Add all form fields to FormData
       Object.keys(editForm).forEach(key => {
         if (key !== 'ticketImage' && key !== 'qrCode' && key !== 'ticketImagePreview' && key !== 'qrCodePreview') {
@@ -236,16 +251,16 @@ const UserMovies = () => {
           }
         }
       });
-      
+
       // Add files if they exist
       if (editForm.ticketImage) {
         formData.append('ticketImage', editForm.ticketImage);
       }
-      
+
       if (editForm.qrCode) {
         formData.append('qrCode', editForm.qrCode);
       }
-      
+
       const response = await axios.patch(
         `${API_BASE_URL}/api/admin/updatemovie/${editingMovie._id}`,
         formData,
@@ -255,17 +270,17 @@ const UserMovies = () => {
           }
         }
       );
-      
+
       if (response.data.success) {
         alert(response.data.message || "Movie ticket updated successfully");
-        
+
         // Refresh movies
         await fetchMovies();
-        
+
         // Update selected movie with new data
         const updatedMovie = movies.find(m => m._id === editingMovie._id);
         setSelectedMovie(updatedMovie);
-        
+
         setIsEditMode(false);
         setEditingMovie(null);
         resetEditForm();
@@ -329,7 +344,7 @@ const UserMovies = () => {
   };
 
   const getStatusBadge = (status) => {
-    switch(status?.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'active':
         return <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold flex items-center gap-1 w-fit"><FaCheckCircle /> Active</span>;
       case 'pending':
@@ -343,14 +358,14 @@ const UserMovies = () => {
 
   // Filter movies based on search and status
   const filteredMovies = movies.filter((movie) => {
-    const matchesSearch = 
+    const matchesSearch =
       (movie.MovieName || "").toLowerCase().includes(search.toLowerCase()) ||
       (movie.fullName || "").toLowerCase().includes(search.toLowerCase()) ||
       (movie.email || "").toLowerCase().includes(search.toLowerCase()) ||
       (movie.theatrePlace || "").toLowerCase().includes(search.toLowerCase());
-    
+
     const matchesStatus = statusFilter === "all" || movie.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -391,7 +406,7 @@ const UserMovies = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow p-6 border border-gray-200">
           <div className="flex items-center">
             <div className="p-3 bg-green-100 rounded-lg mr-4">
@@ -405,7 +420,7 @@ const UserMovies = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow p-6 border border-gray-200">
           <div className="flex items-center">
             <div className="p-3 bg-amber-100 rounded-lg mr-4">
@@ -419,7 +434,7 @@ const UserMovies = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow p-6 border border-gray-200">
           <div className="flex items-center">
             <div className="p-3 bg-purple-100 rounded-lg mr-4">
@@ -449,7 +464,7 @@ const UserMovies = () => {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            
+
             <div className="flex gap-2">
               <select
                 value={statusFilter}
@@ -512,7 +527,7 @@ const UserMovies = () => {
                       </div>
                     </div>
                   </td>
-                  
+
                   <td className="py-4 px-6">
                     <div className="space-y-2">
                       <div className="flex items-center text-sm">
@@ -531,7 +546,7 @@ const UserMovies = () => {
                       </div>
                     </div>
                   </td>
-                  
+
                   <td className="py-4 px-6">
                     <div className="space-y-2">
                       <div className="text-sm">
@@ -552,26 +567,26 @@ const UserMovies = () => {
                       </div>
                     </div>
                   </td>
-                  
+
                   <td className="py-4 px-6">
                     {getStatusBadge(movie.status)}
                     <div className="mt-2 text-xs text-gray-500">
-                      Sold: {movie.soldCount || 0}<br/>
+                      Sold: {movie.soldCount || 0}<br />
                       Remaining: {movie.remainingCount || 0}
                     </div>
                   </td>
-                  
+
                   <td className="py-4 px-6">
                     <div className="text-sm">
                       <div className="font-medium text-gray-900">
                         {formatDate(movie.createdAt)}
                       </div>
                       <div className="text-gray-500">
-                        {new Date(movie.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        {new Date(movie.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
                   </td>
-                  
+
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
                       <button
@@ -616,7 +631,7 @@ const UserMovies = () => {
             <span className="font-semibold">{Math.min(indexOfLastMovie, filteredMovies.length)}</span> of{" "}
             <span className="font-semibold">{filteredMovies.length}</span> tickets
           </div>
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
@@ -625,7 +640,7 @@ const UserMovies = () => {
             >
               Previous
             </button>
-            
+
             <div className="flex items-center gap-1">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 let pageNumber;
@@ -638,23 +653,22 @@ const UserMovies = () => {
                 } else {
                   pageNumber = currentPage - 2 + i;
                 }
-                
+
                 return (
                   <button
                     key={pageNumber}
                     onClick={() => setCurrentPage(pageNumber)}
-                    className={`w-10 h-10 rounded-lg transition ${
-                      currentPage === pageNumber
+                    className={`w-10 h-10 rounded-lg transition ${currentPage === pageNumber
                         ? "bg-blue-600 text-white"
                         : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     {pageNumber}
                   </button>
                 );
               })}
             </div>
-            
+
             <button
               onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
               disabled={currentPage === totalPages}
@@ -737,70 +751,84 @@ const UserMovies = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Side - Images Section */}
                 <div className="lg:col-span-1 space-y-6">
-                  {/* Movie Image */}
+                  {/* Movie Poster - Clickable */}
                   {selectedMovie.movieId?.image && (
                     <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-5 border border-blue-100">
                       <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                         <FaFilm className="mr-2 text-blue-600" /> Movie Poster
                       </h3>
-                      <div className="flex justify-center">
-                        <img 
+                      <div
+                        className="flex justify-center cursor-pointer group relative"
+                        onClick={() => openImagePreview(selectedMovie.movieId.image, `${selectedMovie.MovieName} Poster`)}
+                      >
+                        <img
                           src={getFullImageUrl(selectedMovie.movieId.image)}
                           alt={selectedMovie.MovieName}
-                          className="w-full h-64 object-cover rounded-lg shadow-lg"
+                          className="w-full h-64 object-cover rounded-lg shadow-lg transition transform group-hover:scale-105"
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = "https://via.placeholder.com/300x200?text=Movie+Poster+Not+Found";
                           }}
                         />
+
                       </div>
                       <div className="mt-3 text-center">
                         <p className="text-sm font-medium text-gray-900">{selectedMovie.MovieName}</p>
-                        <p className="text-xs text-gray-500 mt-1">Movie Poster</p>
+                        <p className="text-xs text-gray-500 mt-1">Click to enlarge</p>
                       </div>
                     </div>
                   )}
 
-                  {/* Ticket Image */}
+                  {/* Ticket Image - Clickable */}
                   {selectedMovie.ticketImage && (
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 border border-green-100">
                       <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                         <FaTicketAlt className="mr-2 text-green-600" /> Ticket Image
                       </h3>
-                      <div className="flex justify-center">
-                        <img 
+                      <div
+                        className="flex justify-center cursor-pointer group relative"
+                        onClick={() => openImagePreview(selectedMovie.ticketImage, "Ticket Image")}
+                      >
+                        <img
                           src={getFullImageUrl(selectedMovie.ticketImage)}
                           alt="Movie Ticket"
-                          className="w-full h-64 object-cover rounded-lg shadow-lg"
+                          className="w-full h-64 object-cover rounded-lg shadow-lg transition transform group-hover:scale-105"
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = "";
                           }}
                         />
+
                       </div>
                       <div className="mt-3 text-center">
                         <p className="text-sm font-medium text-gray-900">Uploaded Ticket</p>
-                        <p className="text-xs text-gray-500 mt-1">Ticket Image</p>
+                        <p className="text-xs text-gray-500 mt-1">Click to enlarge</p>
                       </div>
                     </div>
                   )}
 
-                  {/* QR Code */}
+                  {/* QR Code - Clickable */}
                   {selectedMovie.qrCode && (
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-5 border border-purple-100">
                       <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                         <FaQrcode className="mr-2 text-purple-600" /> QR Code
                       </h3>
-                      <div className="flex flex-col items-center">
-                        <img 
-                          src={getFullImageUrl(selectedMovie.qrCode)}
-                          alt="QR Code"
-                          className="w-48 h-48 object-contain rounded-lg shadow-lg bg-white p-2"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "";
-                          }}
-                        />
+                      <div
+                        className="flex flex-col items-center cursor-pointer group relative"
+                        onClick={() => openImagePreview(selectedMovie.qrCode, "QR Code")}
+                      >
+                        <div className="relative">
+                          <img
+                            src={getFullImageUrl(selectedMovie.qrCode)}
+                            alt="QR Code"
+                            className="w-48 h-48 object-contain rounded-lg shadow-lg bg-white p-2 transition transform group-hover:scale-105"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "";
+                            }}
+                          />
+
+                        </div>
                         {selectedMovie.qrCodeLink && (
                           <div className="mt-3 bg-white p-3 rounded-lg w-full">
                             <p className="text-sm font-medium text-gray-700 mb-1">QR Code Link:</p>
@@ -809,6 +837,9 @@ const UserMovies = () => {
                             </p>
                           </div>
                         )}
+                      </div>
+                      <div className="mt-3 text-center">
+                        <p className="text-xs text-gray-500 mt-1">Click to enlarge QR Code</p>
                       </div>
                     </div>
                   )}
@@ -1213,13 +1244,13 @@ const UserMovies = () => {
                         <div className="bg-gray-50 p-4 rounded-lg">
                           <p className="text-sm text-gray-500">Created At</p>
                           <p className="font-medium text-gray-900">
-                            {formatDate(selectedMovie.createdAt)} at {new Date(selectedMovie.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            {formatDate(selectedMovie.createdAt)} at {new Date(selectedMovie.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
                         <div className="bg-gray-50 p-4 rounded-lg">
                           <p className="text-sm text-gray-500">Last Updated</p>
                           <p className="font-medium text-gray-900">
-                            {formatDate(selectedMovie.updatedAt)} at {new Date(selectedMovie.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            {formatDate(selectedMovie.updatedAt)} at {new Date(selectedMovie.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
                       </div>
@@ -1255,9 +1286,9 @@ const UserMovies = () => {
                               <div className="mt-3">
                                 <p className="text-sm text-gray-600 mb-2">Current Preview:</p>
                                 <div className="border rounded-lg p-2 bg-gray-50">
-                                  <img 
-                                    src={editForm.ticketImagePreview} 
-                                    alt="Ticket Preview" 
+                                  <img
+                                    src={editForm.ticketImagePreview}
+                                    alt="Ticket Preview"
                                     className="max-h-40 mx-auto object-contain rounded"
                                     onError={() => handleImageError('ticket', editingMovie._id)}
                                   />
@@ -1285,9 +1316,9 @@ const UserMovies = () => {
                               <div className="mt-3">
                                 <p className="text-sm text-gray-600 mb-2">Current Preview:</p>
                                 <div className="border rounded-lg p-2 bg-gray-50">
-                                  <img 
-                                    src={editForm.qrCodePreview} 
-                                    alt="QR Code Preview" 
+                                  <img
+                                    src={editForm.qrCodePreview}
+                                    alt="QR Code Preview"
                                     className="max-h-40 mx-auto object-contain rounded"
                                     onError={() => handleImageError('qr', editingMovie._id)}
                                   />
@@ -1356,9 +1387,9 @@ const UserMovies = () => {
                     </h3>
                     <div className="flex justify-center items-center min-h-[300px] bg-white rounded-lg p-4">
                       {editForm.ticketImagePreview ? (
-                        <img 
-                          src={editForm.ticketImagePreview} 
-                          alt="Ticket Preview" 
+                        <img
+                          src={editForm.ticketImagePreview}
+                          alt="Ticket Preview"
                           className="max-w-full max-h-[400px] object-contain rounded-lg shadow-lg"
                           onError={(e) => {
                             e.target.onerror = null;
@@ -1389,9 +1420,9 @@ const UserMovies = () => {
                     </h3>
                     <div className="flex justify-center items-center min-h-[300px] bg-white rounded-lg p-4">
                       {editForm.qrCodePreview ? (
-                        <img 
-                          src={editForm.qrCodePreview} 
-                          alt="QR Code Preview" 
+                        <img
+                          src={editForm.qrCodePreview}
+                          alt="QR Code Preview"
                           className="max-w-full max-h-[400px] object-contain rounded-lg shadow-lg"
                           onError={(e) => {
                             e.target.onerror = null;
@@ -1425,6 +1456,48 @@ const UserMovies = () => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Preview Modal - New Modal for displaying enlarged images */}
+      {isImagePreviewModalOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black bg-opacity-90">
+          <div className="relative max-w-5xl w-full">
+
+            <button
+              onClick={() => setIsImagePreviewModalOpen(false)}
+              className="
+                absolute top-4 right-4 md:top-6 md:right-6
+                w-10 h-10 flex items-center justify-center
+                rounded-full bg-white backdrop-blur-md
+                text-red hover:bg-red-500 hover:text-red-500
+                transition-all duration-300 shadow-lg
+              "
+              title="Close"
+            >
+              <FaClose className="text-lg" />
+            </button>
+
+            {/* Image container */}
+            <div className="bg-transparent rounded-lg overflow-hidden">
+              <img
+                src={previewImageUrl}
+                alt={previewImageTitle}
+                className="w-full h-auto max-h-[85vh] object-contain rounded-lg"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://via.placeholder.com/800x600?text=Image+Not+Available";
+                }}
+              />
+            </div>
+
+            {/* Image title */}
+            {previewImageTitle && (
+              <div className="text-center mt-4">
+                <p className="text-white text-lg font-medium">{previewImageTitle}</p>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -21,7 +21,7 @@ const UserList = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://31.97.206.144:8127/api/admin/users");
+      const response = await axios.get("http://31.97.228.17:8127/api/admin/users");
       
       if (response.data && response.data.success) {
         setUsers(response.data.users);
@@ -37,7 +37,7 @@ const UserList = () => {
   const handleDelete = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        await axios.delete(`http://31.97.206.144:8127/api/admin/deleteusers/${userId}`);
+        await axios.delete(`http://31.97.228.17:8127/api/admin/deleteusers/${userId}`);
         alert("User deleted successfully");
         setUsers(users.filter((user) => user._id !== userId));
       } catch (error) {
@@ -51,7 +51,7 @@ const UserList = () => {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://31.97.206.144:8127/api/admin/updateusers/${editingUser._id}`,
+        `http://31.97.228.17:8127/api/admin/updateusers/${editingUser._id}`,
         editingUser
       );
       

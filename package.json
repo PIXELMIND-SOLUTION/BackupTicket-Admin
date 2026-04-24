@@ -17,6 +17,7 @@
     "class-variance-authority": "^0.7.1",
     "date-fns": "^4.1.0",
     "file-saver": "^2.0.5",
+    "firebase": "^12.12.1",
     "html2canvas": "^1.4.1",
     "json2csv": "^6.0.0-alpha.2",
     "jspdf": "^3.0.0",

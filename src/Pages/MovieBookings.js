@@ -13,7 +13,7 @@ const MovieBookings = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const bookingsPerPage = 8;
 
-  const API_BASE_URL = "http://31.97.206.144:8127/api/admin";
+  const API_BASE_URL = "http://31.97.228.17:8127/api/admin";
 
   useEffect(() => {
     fetchBookings();
@@ -780,7 +780,7 @@ const MovieBookings = () => {
                             <p className="text-sm text-gray-500 mb-2">Ticket Image</p>
                             <div className="flex justify-center">
                               <img 
-                                src={`http://31.97.206.144:8127${ticketItem.ticket.ticketImage}`}
+                                src={`http://31.97.228.17:8127${ticketItem.ticket.ticketImage}`}
                                 alt="Ticket"
                                 className="max-h-48 rounded-lg"
                                 onError={(e) => {

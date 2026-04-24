@@ -23,7 +23,7 @@ const MovieNames = () => {
   const fetchMovies = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://31.97.206.144:8127/api/admin/allmovienames");
+      const response = await axios.get("http://31.97.228.17:8127/api/admin/allmovienames");
       
       if (response.data && response.data.movies) {
         setMovies(response.data.movies);
@@ -78,7 +78,7 @@ const MovieNames = () => {
     try {
       if (editingId) {
         // Update movie
-        await axios.put(`http://31.97.206.144:8127/api/admin/updatemoviename/${editingId}`, data, {
+        await axios.put(`http://31.97.228.17:8127/api/admin/updatemoviename/${editingId}`, data, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -86,7 +86,7 @@ const MovieNames = () => {
         alert("Movie updated successfully!");
       } else {
         // Create movie
-        await axios.post("http://31.97.206.144:8127/api/admin/createmoviename", data, {
+        await axios.post("http://31.97.228.17:8127/api/admin/createmoviename", data, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -109,14 +109,14 @@ const MovieNames = () => {
       image: null
     });
     setEditingId(movie._id);
-    setImagePreview(movie.image ? `http://31.97.206.144:8127${movie.image}` : null);
+    setImagePreview(movie.image ? `http://31.97.228.17:8127${movie.image}` : null);
     setShowForm(true);
   };
 
   const handleDelete = async (movieId) => {
     if (window.confirm("Are you sure you want to delete this movie?")) {
       try {
-        await axios.delete(`http://31.97.206.144:8127/api/admin/deletemoviename/${movieId}`);
+        await axios.delete(`http://31.97.228.17:8127/api/admin/deletemoviename/${movieId}`);
         alert("Movie deleted successfully");
         fetchMovies();
       } catch (error) {
@@ -330,7 +330,7 @@ const MovieNames = () => {
                         {movie.image ? (
                           <div className="relative group">
                             <img 
-                              src={`http://31.97.206.144:8127${movie.image}`}
+                              src={`http://31.97.228.17:8127${movie.image}`}
                               alt={movie.MovieName}
                               className="h-16 w-16 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {

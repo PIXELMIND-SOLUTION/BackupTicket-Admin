@@ -18,7 +18,7 @@ const GetProfilePage = () => {
   const [updating, setUpdating] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const API_BASE_URL = "http://31.97.206.144:8127/api/admin";
+  const API_BASE_URL = "http://31.97.228.17:8127/api/admin";
 
   useEffect(() => {
     fetchProfileData();
@@ -52,7 +52,7 @@ const GetProfilePage = () => {
         
         // Set image preview if profile image exists
         if (admin.profileImage) {
-          setImagePreview(`http://31.97.206.144:8127${admin.profileImage}`);
+          setImagePreview(`http://31.97.228.17:8127${admin.profileImage}`);
         } else {
           setImagePreview("https://cdn-icons-png.flaticon.com/512/3135/3135715.png");
         }
@@ -160,7 +160,7 @@ const GetProfilePage = () => {
         // Update image preview
         if (updatedAdmin.profileImage) {
           localStorage.setItem("adminProfileImage", updatedAdmin.profileImage);
-          setImagePreview(`http://31.97.206.144:8127${updatedAdmin.profileImage}`);
+          setImagePreview(`http://31.97.228.17:8127${updatedAdmin.profileImage}`);
         } else if (formData.profileImage) {
           const reader = new FileReader();
           reader.onloadend = () => {
@@ -638,7 +638,7 @@ const GetProfilePage = () => {
                           profileImage: null
                         });
                         if (profileData.profileImage) {
-                          setImagePreview(`http://31.97.206.144:8127${profileData.profileImage}`);
+                          setImagePreview(`http://31.97.228.17:8127${profileData.profileImage}`);
                         } else {
                           setImagePreview("https://cdn-icons-png.flaticon.com/512/3135/3135715.png");
                         }

@@ -18,7 +18,7 @@ const RedemptionManagement = () => {
   const [success, setSuccess] = useState("");
   const redemptionsPerPage = 8;
 
-  const API_BASE_URL = "http://31.97.206.144:8127/api/admin";
+  const API_BASE_URL = "http://31.97.228.17:8127/api/admin";
 
   useEffect(() => {
     fetchRedemptions();

@@ -23,7 +23,7 @@ const RegisterPage = () => {
 
     try {
       // Call the API for registration
-      const response = await fetch('http://31.97.206.144:8127/api/admin/register', {
+      const response = await fetch('http://31.97.228.17:8127/api/admin/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

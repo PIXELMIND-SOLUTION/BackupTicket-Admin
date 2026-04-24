@@ -14,7 +14,7 @@ const BannerManagement = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const API_BASE_URL = "http://31.97.206.144:8127/api/admin";
+  const API_BASE_URL = "http://31.97.228.17:8127/api/admin";
 
   useEffect(() => {
     fetchBanners();
@@ -178,7 +178,7 @@ const BannerManagement = () => {
   const startEditing = (banner) => {
     setEditingBanner(banner);
     setSelectedFile(null);
-    setImagePreview(`http://31.97.206.144:8127${banner.image}`);
+    setImagePreview(`http://31.97.228.17:8127${banner.image}`);
     setError("");
     setSuccess("");
   };
@@ -269,7 +269,7 @@ const BannerManagement = () => {
                       setImagePreview(null);
                       setSelectedFile(null);
                       if (editingBanner) {
-                        setImagePreview(`http://31.97.206.144:8127${editingBanner.image}`);
+                        setImagePreview(`http://31.97.228.17:8127${editingBanner.image}`);
                       }
                     }}
                     className="absolute top-2 right-2 p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition"
@@ -415,7 +415,7 @@ const BannerManagement = () => {
                     {/* Banner Image */}
                     <div className="relative mb-4">
                       <img 
-                        src={`http://31.97.206.144:8127${banner.image}`}
+                        src={`http://31.97.228.17:8127${banner.image}`}
                         alt={`Banner ${banner._id}`}
                         className="w-full h-40 object-cover rounded-lg"
                         onError={(e) => {

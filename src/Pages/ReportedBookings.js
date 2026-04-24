@@ -12,7 +12,7 @@ const ReportedBookings = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const bookingsPerPage = 8;
 
-  const API_BASE_URL = "http://31.97.206.144:8127/api/admin";
+  const API_BASE_URL = "http://31.97.228.17:8127/api/admin";
 
   useEffect(() => {
     fetchReportedBookings();
@@ -659,7 +659,7 @@ const ReportedBookings = () => {
                           </p>
                           <div className="flex justify-center">
                             <img 
-                              src={`http://31.97.206.144:8127${ticketItem.movie.image}`}
+                              src={`http://31.97.228.17:8127${ticketItem.movie.image}`}
                               alt="Movie"
                               className="h-48 rounded-lg"
                               onError={(e) => {
@@ -681,7 +681,7 @@ const ReportedBookings = () => {
                           </p>
                           <div className="flex justify-center">
                             <img 
-                              src={`http://31.97.206.144:8127${ticketItem.ticket.ticketImage}`}
+                              src={`http://31.97.228.17:8127${ticketItem.ticket.ticketImage}`}
                               alt="Ticket"
                               className="max-h-48 rounded-lg"
                               onError={(e) => {

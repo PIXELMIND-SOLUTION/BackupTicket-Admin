@@ -22,7 +22,7 @@ const LoginPage = () => {
 
     try {
       // Call the API for login using axios
-      const response = await axios.post('http://31.97.206.144:8127/api/admin/login', {
+      const response = await axios.post('http://31.97.228.17:8127/api/admin/login', {
         email,
         password
       });

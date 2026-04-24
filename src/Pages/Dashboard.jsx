@@ -18,7 +18,7 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     setRefreshing(true);
     try {
-      const response = await axios.get("http://31.97.206.144:8127/api/admin/dashboard");
+      const response = await axios.get("http://31.97.228.17:8127/api/admin/dashboard");
       
       if (response.data.success) {
         const stats = response.data.stats;
