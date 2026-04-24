@@ -792,7 +792,7 @@ const UserMovies = () => {
                         <img
                           src={getFullImageUrl(selectedMovie.ticketImage)}
                           alt="Movie Ticket"
-                          className="w-full h-64 object-cover rounded-lg shadow-lg transition transform group-hover:scale-105"
+                          className="w-full h-full object-cover rounded-lg shadow-lg transition transform group-hover:scale-105"
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = "";
@@ -1287,7 +1287,7 @@ const UserMovies = () => {
                                 <p className="text-sm text-gray-600 mb-2">Current Preview:</p>
                                 <div className="border rounded-lg p-2 bg-gray-50">
                                   <img
-                                    src={editForm.ticketImagePreview}
+                                    src="{editForm.ticketImagePreview}"
                                     alt="Ticket Preview"
                                     className="max-h-40 mx-auto object-contain rounded"
                                     onError={() => handleImageError('ticket', editingMovie._id)}
